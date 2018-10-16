@@ -12,7 +12,7 @@ const {
 const Sequelize = require('sequelize');
 
 const Op = Sequelize.Op;
-var sqz = new Sequelize('graphql', 'root', '2712!Lamda', {
+var sqz = new Sequelize('graphql', 'root', 'PUT_YOUR_MYSQL_PASSWORD_HERE', {
   host: "localhost",
   port: 3306,
   dialect: 'mysql',
