@@ -5,20 +5,22 @@ const {
   GraphQLList,
   GraphQLString,
   GraphQLNonNull,
-
 } = require('graphql');
+import { PubSub } from 'graphql-yoga';
+import MessageTypes from 'subscriptions-transport-ws/dist/message-types';
 
-
+const pubsub = new PubSub();
 const Sequelize = require('sequelize');
 
 const Op = Sequelize.Op;
-var sqz = new Sequelize('graphql', 'root', 'PUT_YOUR_MYSQL_PASSWORD_HERE', {
+var sqz = new Sequelize('graphql', 'root', '2712!Lamda', {
   host: "localhost",
   port: 3306,
   dialect: 'mysql',
   operatorsAliases: Op
 });
 
+var allTheMessages = [];
 
 sqz.authenticate()
   .then(function () {
@@ -102,6 +104,24 @@ let UserType = new GraphQLObjectType({
   })
 });
 
+let messageType = new GraphQLObjectType({
+  name: 'Message',
+  description: 'A message to be used with subscriptions',
+  fields: () => ({
+    text: {
+      type: GraphQLString,
+      description: 'actual text of the message'
+    },
+    createdByUser: {
+      type: UserType,
+      description: 'user that wrote the message',
+      resolve(parent, args) {
+        return UserDB.findById(parent.dataValues.id);
+      }
+    }
+  })
+});
+
 let RequestType = new GraphQLObjectType({
   name: 'Request',
   description: 'A Request',
@@ -119,7 +139,7 @@ let RequestType = new GraphQLObjectType({
       description: 'user that made the thing',
       resolve(parent, args) {
         return UserDB.findById(parent.dataValues.id);
-        }
+      }
     },
     dateTime: {
       type: GraphQLString,
@@ -127,6 +147,8 @@ let RequestType = new GraphQLObjectType({
     },
   })
 });
+
+// RequestDB.belongsTo(UserDB);//Unsure if necessary
 
 
 let schema = new GraphQLSchema({
@@ -170,10 +192,38 @@ let schema = new GraphQLSchema({
               description: res.dataValues.description,
               dateTime: res.dataValues.dateTime
             }
-            
             return retReq;
           });
         }
+      },
+      createMessage: {
+        type: messageType,
+        args: {
+          createdById: { type: new GraphQLNonNull(GraphQLInt) },
+          text: { type: new GraphQLNonNull(GraphQLString) }
+        },
+        resolve: (parentValue, args) => {
+          const newMessage = {
+            userID: args.createdById,
+            text: args.text
+          }
+          allTheMessages.push(newMessage);
+          pubsub.publish('messageAdded', newMessage)
+          return newMessage;
+        }
+      }
+    }
+  }),
+  subscription: new GraphQLObjectType({
+    name: 'RootSubscription',
+    fields: {
+      messageAdded: {
+        type: GraphQLList(messageType),
+        resolve: (payload, args, context, info) => {
+          console.log(payload);
+          return allTheMessages;
+        },
+        subscribe: () => pubsub.asyncIterator('messageAdded')
       }
     }
   })

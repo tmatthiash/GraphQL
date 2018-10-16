@@ -1,4 +1,4 @@
-const { GraphQLServer } = require('graphql-yoga')
+const { GraphQLServer, PubSub } = require('graphql-yoga')
 import schema from './src/schema2';
 import depthLimit from 'graphql-depth-limit';
 
