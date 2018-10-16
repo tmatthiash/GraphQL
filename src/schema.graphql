@@ -1,0 +1,29 @@
+type Query {
+    description: String
+    users: [User!]!
+    user(id: ID!): User
+    usersFromDB:[User!]!
+    requests: [Request!]!
+}
+
+type Mutation {
+    createUser(email: String!, firstName: String, lastName: String): User
+    createUserFromDB(email: String!, firstName: String, lastName: String): User
+    deleteUser(id: ID!) :User
+    editUser(id: ID!, firstName: String, lastName: String): User
+    createRequest(userID: ID!, description: String!)
+}
+
+type User{
+    id: ID!
+    email: String!
+    firstName: String
+    lastName: String
+}
+
+type Request{
+    id: ID!
+    Date: DateTime
+    Description: String
+    createdBy: User
+}
