@@ -13,7 +13,7 @@ const pubsub = new PubSub();
 const Sequelize = require('sequelize');
 
 const Op = Sequelize.Op;
-var sqz = new Sequelize('graphql', 'root', '2712!Lamda', {
+var sqz = new Sequelize('graphql', 'root', 'XXX', {
   host: "localhost",
   port: 3306,
   dialect: 'mysql',
@@ -116,7 +116,7 @@ let messageType = new GraphQLObjectType({
       type: UserType,
       description: 'user that wrote the message',
       resolve(parent, args) {
-        return UserDB.findById(parent.dataValues.id);
+        return UserDB.findById(parent.userID);
       }
     }
   })
@@ -220,7 +220,8 @@ let schema = new GraphQLSchema({
       messageAdded: {
         type: GraphQLList(messageType),
         resolve: (payload, args, context, info) => {
-          console.log(payload);
+          //payload actually contains just the message that triggers this,
+          //return payload as an array w/ one member should work
           return allTheMessages;
         },
         subscribe: () => pubsub.asyncIterator('messageAdded')
@@ -228,9 +229,6 @@ let schema = new GraphQLSchema({
     }
   })
 });
-
-
-
 
 
 export default schema;
