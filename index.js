@@ -1,4 +1,4 @@
-const { GraphQLServer, PubSub } = require('graphql-yoga')
+const { GraphQLServer } = require('graphql-yoga')
 import schema from './src/schema2';
 import depthLimit from 'graphql-depth-limit';
 
@@ -12,4 +12,3 @@ const optionsServer = {
   validationRules: [depthLimit(5)]
   }
   server.start(optionsServer, () => console.log('Server is running on http://localhost:4000'))
-// server.start(() => console.log(`The server is running on http://localhost:4000`))
