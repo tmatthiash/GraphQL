@@ -12,9 +12,7 @@ import {sqz, RequestDB, UserDB } from './SQLSetup'
 import { messageType, RequestType, UserType } from './GraphTypes';
 
 const pubsub = new PubSub();
-
 var allTheMessages = [];
-
 
 
 let schema = new GraphQLSchema({
@@ -61,6 +59,32 @@ let schema = new GraphQLSchema({
           });
         }
       },
+
+      createUser: {
+        type: UserType,
+        args: {
+          email: { type: new GraphQLNonNull(GraphQLString) },
+          firstName: { type: GraphQLString },
+          lastName: { type: GraphQLString },
+        },
+        resolve: (parentValue, args) => {
+          const createUser = UserDB.build({
+            email: args.email,
+            firstName: args.lastName,
+            lastName: args.lastName
+          });
+          return createUser.save().then(function (res) {
+            const retUser = {
+              id: res.dataValues.id,
+              email: res.dataValues.email,
+              firstName: res.dataValues.firstName,
+              lastName: res.dataValues.lastName
+            }
+            return retUser;
+          });
+        }
+      },
+
       createMessage: {
         type: messageType,
         args: {

@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
-var sqz = new Sequelize('graphql', 'root', 'XXX', {
+var sqz = new Sequelize('graphql', 'root', 'XXX', { //Database, User, Password
   host: "localhost",
   port: 3306,
   dialect: 'mysql',
