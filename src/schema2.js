@@ -31,6 +31,12 @@ let schema = new GraphQLSchema({
         resolve: (parentValue, args) => UserDB.findById(args.id).then(function (user) {
           return user;
         })
+      },
+      allMessages:{
+        type: new GraphQLList(messageType),
+        resolve: () => {
+          return allTheMessages;
+        }
       }
     }
   }),

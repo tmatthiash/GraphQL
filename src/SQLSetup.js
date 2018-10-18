@@ -7,8 +7,6 @@ var sqz = new Sequelize('graphql', 'root', 'XXX', { //Database, User, Password
   operatorsAliases: Op
 });
 
-
-
 sqz.authenticate()
   .then(function () {
     console.log("DB connection established");
