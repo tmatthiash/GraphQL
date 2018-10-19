@@ -1,29 +1,31 @@
-import RepositoryList from '../Repository';
+
 import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
-import Loading from '../Loading';
 
+import React, { Component } from 'react';
+import MessageList from './messageList'
 
 const GET_ALL_MESSAGES = gql`
   {
-    user(id: 1) {
-      email
-      firstName
-      lastName
+    allMessages{
+        text
+        id
+        createdByUser{
+        firstName
+        }
     }
   }
 `;
 
-const Profile = () => (
-  <Query query={GET_REPOSITORIES_OF_CURRENT_USER}>
-    {({ data, loading }) => {
-      const { viewer } = data;
-
-      if (loading || !viewer) {
-        return <Loading />;
-      }
-
-      return <RepositoryList repositories={viewer.repositories} />;
-    }}
-  </Query>
+const Messages = () => (
+    <Query query={GET_ALL_MESSAGES}>
+        {({ data, loading }) => {
+        if (loading || !data) {
+            return <h1>I'm loading maybe?</h1>;
+        } 
+            return <MessageList messages={data.allMessages} />;
+        }}
+    </Query>
 );
+
+export default Messages;

@@ -13,6 +13,7 @@ import { messageType, RequestType, UserType } from './GraphTypes';
 
 const pubsub = new PubSub();
 var allTheMessages = [];
+var messageIndex = 0;
 
 
 let schema = new GraphQLSchema({
@@ -99,9 +100,11 @@ let schema = new GraphQLSchema({
         },
         resolve: (parentValue, args) => {
           const newMessage = {
+            id: messageIndex,
             userID: args.createdById,
             text: args.text
           }
+          messageIndex++;
           allTheMessages.push(newMessage);
           pubsub.publish('messageAdded', newMessage)
           return newMessage;

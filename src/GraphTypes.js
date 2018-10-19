@@ -47,6 +47,10 @@ let UserType = new GraphQLObjectType({
         type: GraphQLString,
         description: 'actual text of the message'
       },
+      id:{
+        type: GraphQLInt,
+        description: "react wants one of these fuckers"
+      },
       createdByUser: {
         type: UserType,
         description: 'user that wrote the message',
